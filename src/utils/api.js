@@ -69,10 +69,15 @@ function populateTheaters(signal) {
 export async function listMovies(signal) {
   const url = new URL(`${API_BASE_URL}/movies?is_showing=true`);
   const addReviews = populateReviews(signal);
-  return await fetchJson(url, { headers, signal }, []).then((movies) =>
-    Promise.all(movies.map(addReviews))
-  );
+  const movies = await fetchJson(url, { headers, signal }, []);
+  
+  if (movies.length === 0) {
+    return [{ message: "No movies currently showing." }];
+  }
+  
+  return Promise.all(movies.map(addReviews));
 }
+
 
 /**
  * Retrieves all existing theaters
